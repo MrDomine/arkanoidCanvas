@@ -20,11 +20,18 @@ window.onload = () => {
     var score = 0;
     var lives = 3;
     var inicioJuego = true;
+    var contador=0;
     var x = canvas.width / 2; y = canvas.height - paddleHeight - ballRadius;
     for (c = 0; c < brickColumnCount; c++) {
         bricks[c] = [];
         for (r = 0; r < brickRowCount; r++) {
             bricks[c][r] = { x: 0, y: 0, status: 1 };
+        }
+    }
+    function addNewBricksRow() {
+        let newBrick=[];
+        for (c = 0; c < brickColumnCount; c++) {
+            bricks[c].unshift({ x: 0, y: 0, status: 1 })
         }
     }
 
@@ -33,8 +40,8 @@ window.onload = () => {
     document.addEventListener("keyup", keyUpHandler, false);
 
     function collisionDetection() {
-        for (c = 0; c < brickColumnCount; c++) {
-            for (r = 0; r < brickRowCount; r++) {
+        for (c = 0; c < bricks.length; c++) {
+            for (r = 0; r < bricks[c].length; r++) {
                 var b = bricks[c][r];
                 if (b.status == 1) {
                     if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
@@ -59,18 +66,6 @@ window.onload = () => {
         }
 
     }
-
-    function drawScore() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
-        ctx.fillText("Score: " + score, 8, 20);
-    }
-    function drawLives() {
-        ctx.font = "16px Arial";
-        ctx.fillStyle = "#0095DD";
-        ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
-    }
-
     function keyUpHandler(e) {
         if (e.keyCode == 39) {
             rightPressed = false;
@@ -79,6 +74,19 @@ window.onload = () => {
             leftPressed = false;
         }
     }
+
+    function drawScore() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Score: " + score + " - "+contador, 8, 20);
+    }
+    function drawLives() {
+        ctx.font = "16px Arial";
+        ctx.fillStyle = "#0095DD";
+        ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+    }
+
+   
     function drawBall() {
         ctx.beginPath();
         ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
@@ -94,8 +102,8 @@ window.onload = () => {
         ctx.closePath();
     }
     function drawBricks() {
-        for (c = 0; c < brickColumnCount; c++) {
-            for (r = 0; r < brickRowCount; r++) {
+        for (c = 0; c < bricks.length; c++) {
+            for (r = 0; r < bricks[c].length; r++) {
                 if (bricks[c][r].status == 1) {
                     var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
                     var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
@@ -112,6 +120,7 @@ window.onload = () => {
     }
 
     function draw() {
+        contador++;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawScore()
         drawLives()
@@ -155,6 +164,11 @@ window.onload = () => {
         collisionDetection()
         x += dx;
         y += dy;
+
+        if(contador%500==0){
+            addNewBricksRow()
+            
+        }
     }
 
 
